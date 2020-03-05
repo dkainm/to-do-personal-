@@ -14,31 +14,26 @@ class ViewController: UIViewController {
     @IBOutlet weak var deleteAllBarButton: UIBarButtonItem!
     @IBOutlet weak var noTaskImage: UIImageView!
     
-    var task: Task!
+    var taskOne: Task!
     var taskArray: [[Task]] = []
-    var router: Router!
     let cellId = "TableViewCell"
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        callDelegates()
-        router = Router(navigation: navigationController)
+        callDelegates() //Setting delegate for Table View
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        fetchyData()
-        
-//        let navBarAppearance = UINavigationBarAppearance()
-          
-//        navigationController?.navigationBar.standardAppearance = navBarAppearance
-//        navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
-                       
+        fetchyData() //Getting data from database to the Table View
     }
     
     func fetchyData() {
         DBManager.instance.fetchData { (done, taskArray) in
             if done, let allTaskArray = taskArray {
-                self.taskArray = splitTask(allTaskArray)
+                
+                self.taskArray = splitTask(allTaskArray) //Filter tasks to done and undone
+                
+                //Hide Table View and show Image "No Tasks" when there are no tasks
                 if allTaskArray.count > 0 {
                     noTaskImage.isHidden = true
                     tv.isHidden = false
@@ -48,13 +43,14 @@ class ViewController: UIViewController {
                     tv.isHidden = true
                     tv.reloadData()
                 }
-//                if taskArray.count > 1 {
-//                    deleteAllBarButton.isEnabled = true
-//        //            deleteAllBarButton.isHidden = false
-//                } else {
-//                    deleteAllBarButton.isEnabled = false
-//        //            deleteAllBarButton.isHidden = true
-//                }
+                
+                // Enable button "Delete all" when there are more than 1 task
+                if allTaskArray.count > 1 {
+                    deleteAllBarButton.isEnabled = true
+                } else {
+                    deleteAllBarButton.isEnabled = false
+                }
+                
             }
         }
         
@@ -62,6 +58,8 @@ class ViewController: UIViewController {
     
     func splitTask(_ tasks: [Task]) -> [[Task]] {
         var result: [[Task]] = []
+        
+        //Filter tasks to different arrays
         let doneTask = tasks.filter {
             $0.taskStatus == true
         }
@@ -69,17 +67,20 @@ class ViewController: UIViewController {
             $0.taskStatus == false
         }
         
-        if doneTask.count > 0 {
-            result.append(doneTask)
-        }
+        //Add filtered tasks to arrays
         if undoneTask.count > 0 {
             result.append(undoneTask)
         }
+        if doneTask.count > 0 {
+            result.append(doneTask)
+        }
+        
         
         return result
     }
     
     func addTask() {
+        //Navigate to controller "Add Task"
         let storyBoard: UIStoryboard = UIStoryboard(name: "AddTaskViewController", bundle: nil)
         let newViewController = storyBoard.instantiateViewController(withIdentifier: "AddTaskViewController") as! AddTaskViewController
         navigationController?.show(newViewController, sender: nil)
@@ -98,33 +99,32 @@ class ViewController: UIViewController {
     }
 
     @IBAction func deleteAllButton(_ sender: Any) {
+        
+        //Creating an alert
         let alertController = UIAlertController(title: "Are you sure you want to delete all tasks?", message: "", preferredStyle: .alert)
         
-
+        //Creating actions
         let okAction = UIAlertAction(title: "Ok", style: .default) {
             UIAlertAction in
-            
-            print("Ok Pressed")
+
+            //Delete each task in the task array
             self.taskArray.forEach { task in
-//                DBManager.instance.deleteData(task: task)
+                DBManager.instance.deleteData(task: self.taskOne)
             }
-//            for i in 0...self.taskArray.count - 1 {
-//                DBManager.instance.deleteData(task: self.taskArray[i])
-//            }
+            
+            //Getting data from database to the Table View
             self.fetchyData()
         }
-        
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) {
             UIAlertAction in
             print("Cancel Pressed")
         }
-
+        
+        //Adding actions to the alert
         alertController.addAction(okAction)
         alertController.addAction(cancelAction)
 
         self.present(alertController, animated: true, completion: nil)
-        
-        
     }
     
 }
@@ -132,7 +132,6 @@ class ViewController: UIViewController {
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
         return taskArray[section].count
     }
     
@@ -147,33 +146,8 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func reloadTable() {
-        //todo: КАСТЫЛЬ
         fetchyData()
-//        if taskArray.count == 1 {
-//            var doneTask =  taskArray[0].filter { $0.taskStatus }
-//            var undoneTask =  taskArray[0].filter { $0.taskStatus == false }
-//
-//            taskArray = []
-//
-//            taskArray.append(doneTask)
-//            taskArray.append(undoneTask)
-//        } else {
-//            var doneTask =  taskArray[0].filter { $0.taskStatus }
-//            doneTask +=  taskArray[1].filter { $0.taskStatus }
-//
-//            var undoneTask =  taskArray[0].filter { $0.taskStatus == false }
-//            undoneTask +=  taskArray[1].filter { $0.taskStatus == false }
-//
-//            taskArray = []
-//            taskArray.append(doneTask)
-//            taskArray.append(undoneTask)
-//        }
-        
         tv.reloadData()
-        
-        
-//        taskArray = splitTask(taskArray)
-//        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -214,11 +188,10 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        
         if section == 1 {
-            return "Undone tasks"
+            return "Done"
         } else {
-            return "Done tasks"
+            return "Undone"
         }
     }
 
