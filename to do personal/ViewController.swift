@@ -108,8 +108,11 @@ class ViewController: UIViewController {
             UIAlertAction in
 
             //Delete each task in the task array
-            self.taskArray.forEach { task in
-                DBManager.instance.deleteData(task: self.taskOne)
+            self.taskArray[0].forEach { task in
+                DBManager.instance.deleteData(task: task)
+            }
+            self.taskArray[1].forEach { task in
+                DBManager.instance.deleteData(task: task)
             }
             
             //Getting data from database to the Table View
@@ -188,6 +191,13 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        
+        
+        if taskArray.count == 1,
+            let name = taskArray.first?.first?.taskStatus {
+            return name ? "Done" : "Undone"
+        }
+        
         if section == 1 {
             return "Done"
         } else {
