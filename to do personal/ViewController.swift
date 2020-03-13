@@ -21,6 +21,11 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         callDelegates() //Setting delegate for Table View
+        
+        //Creating tap gesture to noTask Image 
+        noTaskImage.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tap))
+        noTaskImage.addGestureRecognizer(tapGesture)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -95,6 +100,10 @@ class ViewController: UIViewController {
     }
     
     @IBAction func addTaped(_ sender: Any) {
+        addTask()
+    }
+    
+    @objc func tap() {
         addTask()
     }
 

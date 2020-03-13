@@ -30,6 +30,7 @@
                             </tableView>
                         </subviews>
                         <color key="backgroundColor" name="BackgroundTableColor"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="com-zl-Omc" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="IDC-ds-xSW"/>
                             <constraint firstItem="mJp-ku-ZeG" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="125" id="LbD-Xb-FM8"/>
