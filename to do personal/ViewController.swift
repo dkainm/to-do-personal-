@@ -117,11 +117,14 @@ class ViewController: UIViewController {
             UIAlertAction in
 
             //Delete each task in the task array
-            self.taskArray[0].forEach { task in
-                DBManager.instance.deleteData(task: task)
-            }
-            self.taskArray[1].forEach { task in
-                DBManager.instance.deleteData(task: task)
+            if self.taskArray.count == 1 {
+                self.taskArray[0].forEach { task in
+                    DBManager.instance.deleteData(task: task) }
+            } else {
+                self.taskArray[0].forEach { task in
+                    DBManager.instance.deleteData(task: task) }
+                self.taskArray[1].forEach { task in
+                    DBManager.instance.deleteData(task: task) }
             }
             
             //Getting data from database to the Table View
